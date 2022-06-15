@@ -34,7 +34,9 @@ footer, header, hgroup, menu, nav, section {
 }
 body {
 	line-height: 1;
-  background-color: ${(props) => props.theme.black.darker};
+  background-color: ${(props) => props.theme.black.lighter};
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  color:${(props) => props.theme.white.darker}
 }
 ol, ul {
 	list-style: none;
@@ -50,6 +52,14 @@ q:before, q:after {
 table {
 	border-collapse: collapse;
 	border-spacing: 0;
+}
+
+a{
+	text-decoration: none;
+	color:inherit;
+}
+a:visited, a:active {
+	color:inherit;
 }
 `;
 

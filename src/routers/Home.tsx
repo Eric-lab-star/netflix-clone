@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import Header from "../screens/Header";
+import Header from "../components/Header";
 
 const Main = styled.div`
   width: 100vw;
@@ -8,9 +8,5 @@ const Main = styled.div`
 `;
 
 export default function Home() {
-  return (
-    <Main>
-      <Header />
-    </Main>
-  );
+  return <Main>heloo</Main>;
 }
