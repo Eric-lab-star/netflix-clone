@@ -34,8 +34,17 @@ function DiamondPointer() {
 
 export default function Location({ links, location }: any) {
   return (
-    <LinkBox>
-      <Link to={links.location}>{links.id}</Link>
+    <LinkBox whileHover={{ color: "red" }}>
+      <Link
+        to={links.location}
+        style={
+          location.pathname === links.location
+            ? { color: "red" }
+            : { color: "" }
+        }
+      >
+        {links.id}
+      </Link>
       {location.pathname === links.location ? <DiamondPointer /> : null}
     </LinkBox>
   );
