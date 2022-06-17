@@ -12,6 +12,9 @@ import styled from "styled-components";
 const Main = styled.div`
   width: 100vw;
   height: 200vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 
 function App() {
