@@ -1,7 +1,7 @@
 const APIKEY = "06ad24f20ddddf36191cdf82e51a81ee";
 const BASEURL = "https://api.themoviedb.org/3";
 
-interface IResult {
+export interface IResult {
   adult: boolean;
   backdrop_path: string;
   genre_ids: number[];

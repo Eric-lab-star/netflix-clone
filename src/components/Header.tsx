@@ -23,6 +23,7 @@ const Nav = styled(motion.div)`
   justify-content: space-between;
   box-sizing: border-box;
   padding: 10px 50px;
+  z-index: 50;
 `;
 
 const Column = styled.div`
@@ -35,7 +36,6 @@ const Column = styled.div`
 
 const Contents = styled.div`
   position: absolute;
-  z-index: -1;
 `;
 
 const SearchBtn = styled(motion.button)`
@@ -72,10 +72,10 @@ export default function Header() {
   const [clicked, setClicked] = useState(Boolean(false));
   const color = useTransform(
     scrollYProgress,
-    [0, 0.05],
+    [0, 0.08],
     [
-      "linear-gradient(rgba(0,0,0,1) 0%, rgba(0,0,0,0.03) 50% )",
-      "linear-gradient(rgba(0,0,0,1) 0%, rgba(0,0,0,1) 50%)",
+      "linear-gradient(rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 30% )",
+      "linear-gradient(rgba(0,0,0,1) 0%, rgba(0,0,0,1) 30%)",
     ]
   );
   const onClick = () => {

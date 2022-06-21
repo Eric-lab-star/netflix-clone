@@ -35,7 +35,7 @@ footer, header, hgroup, menu, nav, section {
 }
 body {
 	line-height: 1;
-  background-color: ${(props) => props.theme.black.lighter};
+  background-color: ${(props) => props.theme.black.veryDark};
   font-family: Georgia, 'Times New Roman', Times, serif;
   color:${(props) => props.theme.white.darker}
 }
