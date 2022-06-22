@@ -6,7 +6,6 @@ import { RecoilRoot } from "recoil";
 import { createGlobalStyle, ThemeProvider } from "styled-components";
 import { defaultTheme } from "./theme";
 import { QueryClient, QueryClientProvider } from "react-query";
-import { ReactQueryDevtools } from "react-query/devtools";
 const GlobalStyle = createGlobalStyle`
   html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
@@ -37,7 +36,8 @@ body {
 	line-height: 1;
   background-color: ${(props) => props.theme.black.veryDark};
   font-family: Georgia, 'Times New Roman', Times, serif;
-  color:${(props) => props.theme.white.darker}
+  color:${(props) => props.theme.white.darker};
+
 }
 ol, ul {
 	list-style: none;
@@ -72,7 +72,6 @@ root.render(
   <BrowserRouter>
     <RecoilRoot>
       <QueryClientProvider client={client}>
-        <ReactQueryDevtools initialIsOpen={false} />
         <ThemeProvider theme={defaultTheme}>
           <GlobalStyle />
           <App />

@@ -1,8 +1,7 @@
-import { AnimatePresence, motion } from "framer-motion";
-import { useRef, useState } from "react";
+import { motion } from "framer-motion";
 import { useQuery } from "react-query";
 import styled from "styled-components";
-import { getConfig, getMovies, IConfig, IMovies, IResult } from "../api";
+import { getConfig, getMovies, IConfig, IMovies } from "../api";
 import Logo from "../components/Logo";
 import SliderComponent from "../components/Slider";
 

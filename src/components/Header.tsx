@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
-import styled, { DefaultTheme, useTheme } from "styled-components";
+import styled from "styled-components";
 import {
   AnimatePresence,
   motion,
@@ -9,7 +9,7 @@ import {
 import Location from "./Location";
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { solid } from "@fortawesome/fontawesome-svg-core/import.macro"; // <-- import styles to be used
+import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
 import Logo from "./Logo";
 
 const Nav = styled(motion.div)`
@@ -20,8 +20,8 @@ const Nav = styled(motion.div)`
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   box-sizing: border-box;
+  justify-content: space-between;
   padding: 10px 50px;
   z-index: 50;
 `;
