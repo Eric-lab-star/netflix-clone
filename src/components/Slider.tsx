@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, LayoutGroup } from "framer-motion";
 import { useState } from "react";
 import styled from "styled-components";
 import { IMovies } from "../api";
@@ -10,6 +10,7 @@ const Slider = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  top: 100px;
 `;
 
 const SliderGrid = styled(motion.div)`
@@ -19,13 +20,10 @@ const SliderGrid = styled(motion.div)`
   width: 100%;
   height: ${PosterHeight}px;
   gap: 10px;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(6, 1fr);
 `;
 
 const PosterBox = styled(motion.div)<{ imgsrc: String }>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
   background-image: ${(props) => `url(${props.imgsrc})`};
   background-size: cover;
   background-position: center center;
@@ -35,7 +33,7 @@ const ButtonBox = styled.div`
   background: linear-gradient(90deg, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0));
   color: black;
   position: absolute;
-  height: ${PosterHeight}px;
+  height: ${PosterHeight + 20}px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -70,6 +68,14 @@ const VSlider = {
   }),
 };
 
+const Box = styled(motion.div)`
+  width: ${100 / 6}%;
+  height: 100px;
+  background-color: white;
+  position: absolute;
+  top: ${PosterHeight}px;
+`;
+
 interface ISliderProps {
   movieData: IMovies | undefined;
   imgBaseUrl: string | undefined;
@@ -84,21 +90,22 @@ export default function SliderComponent({
   //var
   const [isHover, setIsHover] = useState(false);
   const [isLeft, setIsLeft] = useState(false);
-  const [visible, setVisible] = useState(6);
+  const [visible, setVisible] = useState(5);
   const [isExit, setIsExit] = useState(false);
+  const [layoutId, setLayoutId] = useState("");
   // utility fn
   const onRightBtn = () => {
     if (isExit) return;
     setIsLeft(false);
     toggleExit();
-    setVisible((prev) => (prev += 7));
+    setVisible((prev) => (prev += 6));
   };
   const onLeftBtn = () => {
     if (isExit) return;
     if (visible === 6) return;
     setIsLeft(true);
     toggleExit();
-    setVisible((prev) => (prev -= 7));
+    setVisible((prev) => (prev -= 6));
   };
   const onMouseEnter = () => {
     setIsHover(true);
@@ -110,12 +117,15 @@ export default function SliderComponent({
   const toggleExit = () => setIsExit((prev) => !prev);
 
   const getSlider = () => {
-    const newArray = [];
-    const movieResults = movieData?.results;
-    for (let i = 0; i < 7; i++) {
-      newArray.unshift(movieResults?.[(visible - i) % movieResults?.length]);
+    if (movieData) {
+      const newArray = [];
+      const movieResults = movieData.results;
+      for (let i = 0; i < 6; i++) {
+        newArray.unshift(movieResults?.[(visible - i) % movieResults.length]);
+      }
+      return newArray;
     }
-    return newArray;
+    return;
   };
 
   //renderer
@@ -137,12 +147,18 @@ export default function SliderComponent({
         >
           {getSlider()?.map((v, i) => (
             <PosterBox
-              key={v?.id}
-              imgsrc={`${imgBaseUrl}${posterSize}` + v?.poster_path}
-            />
+              onMouseEnter={() => setLayoutId(v.id + "")}
+              onMouseLeave={() => setLayoutId("")}
+              whileHover={{ y: -10 }}
+              key={v.id}
+              imgsrc={`${imgBaseUrl}${posterSize}` + v.poster_path}
+            >
+              {parseInt(layoutId) === v.id && <Box>{v.title}</Box>}
+            </PosterBox>
           ))}
         </SliderGrid>
       </AnimatePresence>
+
       <LeftBtn isHover={isHover}>
         <button onClick={onLeftBtn}>
           <FontAwesomeIcon icon={solid("chevron-left")} />

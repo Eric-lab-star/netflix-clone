@@ -1,5 +1,5 @@
-import React from "react";
-import { Route, Routes } from "react-router-dom";
+import React, { useEffect, useRef } from "react";
+import { Route, Routes, useLocation } from "react-router-dom";
 import Home from "./routers/Home";
 import Movies from "./screens/Movies";
 import MyList from "./screens/MyList";
@@ -8,6 +8,10 @@ import Search from "./routers/Search";
 import Tv from "./routers/Tv";
 import Header from "./components/Header";
 import styled from "styled-components";
+
+window.onbeforeunload = function () {
+  window.scroll(0, 0);
+};
 
 const Main = styled.div`
   width: 100vw;
@@ -18,6 +22,11 @@ const Main = styled.div`
 `;
 
 function App() {
+  const location = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location]);
+
   return (
     <Main>
       <Routes>

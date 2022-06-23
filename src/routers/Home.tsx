@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useRef } from "react";
 import { useQuery } from "react-query";
 import styled from "styled-components";
 import { getConfig, getMovies, IConfig, IMovies } from "../api";
