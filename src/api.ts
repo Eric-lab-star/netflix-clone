@@ -42,6 +42,13 @@ export interface IConfig {
   change_keys: string[];
 }
 
+interface IGenre {
+  id: number;
+  name: string;
+}
+export interface IGenres {
+  genres: IGenre[];
+}
 export async function getMovies() {
   const response = await fetch(
     `${BASEURL}/movie/now_playing?api_key=${APIKEY}&language=en-US&page=1`
@@ -52,6 +59,14 @@ export async function getMovies() {
 
 export async function getConfig() {
   const response = await fetch(`${BASEURL}/configuration?api_key=${APIKEY}`);
+  const json = await response.json();
+  return json;
+}
+
+export async function getGenre<IGenres>() {
+  const response = await fetch(
+    `${BASEURL}/genre/movie/list?api_key=${APIKEY}&language=en-US`
+  );
   const json = await response.json();
   return json;
 }

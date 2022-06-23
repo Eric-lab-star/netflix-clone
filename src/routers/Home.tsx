@@ -37,6 +37,9 @@ const MovieDetail = styled.div`
   width: 20em;
 `;
 const Loading = styled(motion.svg)`
+  position: relative;
+  left: 40%;
+  top: 40%;
   width: 20vw;
 `;
 

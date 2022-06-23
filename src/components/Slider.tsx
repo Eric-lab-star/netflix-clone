@@ -1,9 +1,10 @@
-import { AnimatePresence, motion, LayoutGroup } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import styled from "styled-components";
-import { IMovies } from "../api";
+import { getGenre, IGenres, IMovies } from "../api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
+import { useQuery } from "react-query";
 const PosterHeight = 360;
 const Slider = styled.div`
   position: relative;
@@ -27,6 +28,13 @@ const PosterBox = styled(motion.div)<{ imgsrc: String }>`
   background-image: ${(props) => `url(${props.imgsrc})`};
   background-size: cover;
   background-position: center center;
+  position: relative;
+  &:first-child {
+    transform-origin: center left;
+  }
+  &:last-child {
+    transform-origin: center right;
+  }
 `;
 
 const ButtonBox = styled.div`
@@ -45,6 +53,18 @@ const ButtonBox = styled.div`
   }
 `;
 
+const HoveredBox = styled(motion.div)`
+  width: 100%;
+  box-sizing: border-box;
+
+  background-color: black;
+  position: absolute;
+  top: ${PosterHeight}px;
+  padding: 5px;
+`;
+
+const MovieInfoBox = styled.div``;
+
 const LeftBtn = styled(ButtonBox)<{ isHover: Boolean }>`
   opacity: ${(props) => (props.isHover ? 1 : 0)};
   left: 0px;
@@ -57,6 +77,19 @@ const RightBtn = styled(ButtonBox)<{ isHover: Boolean }>`
   right: 0px;
   width: 50px;
 `;
+const GenreBox = styled.div`
+  display: flex;
+`;
+const Genre = styled.div`
+  font-size: 12px;
+  margin: 0 2.5px;
+`;
+const Title = styled.div`
+  font-size: 18px;
+`;
+const Vote = styled.div`
+  font-size: 12px;
+`;
 
 const VSlider = {
   hidden: (isLeft: Boolean) => ({
@@ -67,14 +100,6 @@ const VSlider = {
     x: isLeft ? window.innerWidth + 10 : -window.innerWidth - 10,
   }),
 };
-
-const Box = styled(motion.div)`
-  width: ${100 / 6}%;
-  height: 100px;
-  background-color: white;
-  position: absolute;
-  top: ${PosterHeight}px;
-`;
 
 interface ISliderProps {
   movieData: IMovies | undefined;
@@ -93,6 +118,11 @@ export default function SliderComponent({
   const [visible, setVisible] = useState(5);
   const [isExit, setIsExit] = useState(false);
   const [layoutId, setLayoutId] = useState("");
+  const { data: genreObj, isLoading: isGenreObjLoading } = useQuery<IGenres>(
+    ["movies", "genres"],
+    getGenre
+  );
+
   // utility fn
   const onRightBtn = () => {
     if (isExit) return;
@@ -113,9 +143,7 @@ export default function SliderComponent({
   const onMouseLeave = () => {
     setIsHover(false);
   };
-
   const toggleExit = () => setIsExit((prev) => !prev);
-
   const getSlider = () => {
     if (movieData) {
       const newArray = [];
@@ -128,6 +156,19 @@ export default function SliderComponent({
     return;
   };
 
+  const getGenreString = (inputIdArray: Number[]) => {
+    if (isGenreObjLoading) return;
+    if (genreObj) {
+      const genreObjArray = genreObj.genres;
+      const filteredId = genreObjArray.filter((obj) => {
+        const result = inputIdArray.filter((id) => id === obj.id);
+        return result[0];
+      });
+
+      return filteredId;
+    }
+    return;
+  };
   //renderer
   return (
     <Slider onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
@@ -149,11 +190,24 @@ export default function SliderComponent({
             <PosterBox
               onMouseEnter={() => setLayoutId(v.id + "")}
               onMouseLeave={() => setLayoutId("")}
-              whileHover={{ y: -10 }}
+              whileHover={{ scale: 1.1 }}
               key={v.id}
               imgsrc={`${imgBaseUrl}${posterSize}` + v.poster_path}
             >
-              {parseInt(layoutId) === v.id && <Box>{v.title}</Box>}
+              {parseInt(layoutId) === v.id && (
+                <HoveredBox>
+                  <MovieInfoBox>
+                    <Vote>Vote Average: {v.vote_average}</Vote>
+
+                    <Title>{v.title}</Title>
+                    <GenreBox>
+                      {getGenreString(v.genre_ids)?.map((obj) => (
+                        <Genre key={obj.id}>{obj.name}</Genre>
+                      ))}
+                    </GenreBox>
+                  </MovieInfoBox>
+                </HoveredBox>
+              )}
             </PosterBox>
           ))}
         </SliderGrid>
