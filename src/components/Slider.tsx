@@ -29,7 +29,6 @@ const PosterBox = styled(motion.div)<{ imgsrc: String }>`
   background-image: ${(props) => `url(${props.imgsrc})`};
   background-size: cover;
   background-position: center center;
-  position: relative;
   &:first-child {
     transform-origin: center left;
   }
@@ -46,6 +45,7 @@ const ButtonBox = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 1;
   & button {
     border-style: none;
     background-color: transparent;
@@ -278,7 +278,7 @@ export default function SliderComponent({
             <PosterBox
               onMouseEnter={() => setPosterConfig(v)}
               onMouseLeave={removePosterConfig}
-              whileHover={{ scale: 1.1 }}
+              whileHover={{ scale: 1.1, zIndex: 1 }}
               key={v.id}
               imgsrc={`${imgBaseUrl}${posterSize}` + v.poster_path}
             >
