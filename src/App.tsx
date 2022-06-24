@@ -1,4 +1,3 @@
-import React, { useEffect, useRef } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
 import Home from "./routers/Home";
 import Movies from "./screens/Movies";
@@ -8,6 +7,7 @@ import Search from "./routers/Search";
 import Tv from "./routers/Tv";
 import Header from "./components/Header";
 import styled from "styled-components";
+import MovieDetail from "./screens/MovieDetail";
 
 window.onbeforeunload = function () {
   window.scroll(0, 0);
@@ -23,22 +23,23 @@ const Main = styled.div`
 
 function App() {
   const location = useLocation();
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [location]);
+  const state = location.state as { backgroundLocation?: Location };
+  console.log(state?.backgroundLocation);
 
   return (
     <Main>
-      <Routes>
+      <Routes location={state?.backgroundLocation || location}>
         <Route path="/" element={<Header />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/tv" element={<Tv />} />
-          <Route path="/search" element={<Search />} />
-          <Route path="/movies" element={<Movies />} />
-          <Route path="/trending" element={<Trending />} />
-          <Route path="/myList" element={<MyList />} />
+          <Route index element={<Home />} />
+          <Route path="*" element={<div>nothing to show</div>} />
         </Route>
       </Routes>
+
+      {state?.backgroundLocation && (
+        <Routes>
+          <Route path="/movieDetail/:id" element={<MovieDetail />} />
+        </Routes>
+      )}
     </Main>
   );
 }

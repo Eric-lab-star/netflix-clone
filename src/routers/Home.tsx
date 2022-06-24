@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
-import { useRef } from "react";
 import { useQuery } from "react-query";
+import { Outlet } from "react-router-dom";
 import styled from "styled-components";
 import { getConfig, getMovies, IConfig, IMovies } from "../api";
 import Logo from "../components/Logo";

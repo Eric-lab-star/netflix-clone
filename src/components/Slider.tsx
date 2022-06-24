@@ -1,4 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import Chart from "react-apexcharts";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
@@ -141,6 +142,8 @@ export default function SliderComponent({
   );
   const [chartOption, setChartOption] = useState<ApexCharts.ApexOptions>();
   const [chartSeries, setChartSeries] = useState<number[]>();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(
     () =>
@@ -181,7 +184,6 @@ export default function SliderComponent({
                   show: true,
                   showAlways: true,
                   formatter: function (w) {
-                    console.log(w);
                     return w.config.series[0];
                   },
                 },
@@ -276,10 +278,16 @@ export default function SliderComponent({
         >
           {getSlider()?.map((v, i) => (
             <PosterBox
+              layoutId={v.id + ""}
+              onClick={() =>
+                navigate(`/movieDetail/${v.id}`, {
+                  state: { backgroundLocation: location },
+                })
+              }
+              key={v.id}
               onMouseEnter={() => setPosterConfig(v)}
               onMouseLeave={removePosterConfig}
               whileHover={{ scale: 1.1, zIndex: 1 }}
-              key={v.id}
               imgsrc={`${imgBaseUrl}${posterSize}` + v.poster_path}
             >
               {parseInt(layoutId) === v.id && (
