@@ -1,7 +1,8 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useState } from "react";
+import Chart from "react-apexcharts";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
-import { getGenre, IGenres, IMovies } from "../api";
+import { getGenre, IGenres, IMovies, IResult } from "../api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
 import { useQuery } from "react-query";
@@ -56,15 +57,44 @@ const ButtonBox = styled.div`
 const HoveredBox = styled(motion.div)`
   width: 100%;
   box-sizing: border-box;
-
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  align-items: center;
   background-color: black;
   position: absolute;
   top: ${PosterHeight}px;
   padding: 5px;
 `;
 
-const MovieInfoBox = styled.div``;
+const MovieInfoBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  position: relative;
+  left: -30px;
+`;
+const Vote = styled.div`
+  position: relative;
+  left: -20px;
+`;
 
+const GenreBox = styled.div`
+  display: flex;
+  align-items: center;
+`;
+const Genre = styled.div`
+  padding: 3px;
+  white-space: nowrap;
+  border-radius: 3px;
+  background-color: #686de0;
+  color: #30336b;
+  font-size: 12px;
+  margin: 0 2.5px;
+`;
+const Title = styled.div`
+  margin-bottom: 5px;
+  font-size: 18px;
+`;
 const LeftBtn = styled(ButtonBox)<{ isHover: Boolean }>`
   opacity: ${(props) => (props.isHover ? 1 : 0)};
   left: 0px;
@@ -76,19 +106,6 @@ const RightBtn = styled(ButtonBox)<{ isHover: Boolean }>`
   opacity: ${(props) => (props.isHover ? 1 : 0)};
   right: 0px;
   width: 50px;
-`;
-const GenreBox = styled.div`
-  display: flex;
-`;
-const Genre = styled.div`
-  font-size: 12px;
-  margin: 0 2.5px;
-`;
-const Title = styled.div`
-  font-size: 18px;
-`;
-const Vote = styled.div`
-  font-size: 12px;
 `;
 
 const VSlider = {
@@ -122,6 +139,68 @@ export default function SliderComponent({
     ["movies", "genres"],
     getGenre
   );
+  const [chartOption, setChartOption] = useState<ApexCharts.ApexOptions>();
+  const [chartSeries, setChartSeries] = useState<number[]>();
+
+  useEffect(
+    () =>
+      setChartOption({
+        fill: {
+          type: "solid",
+          colors: ["#F44336", "#921b43"],
+        },
+        stroke: {
+          width: 1,
+          colors: ["black"],
+        },
+        chart: {
+          type: "donut",
+        },
+        legend: {
+          show: false,
+        },
+        tooltip: {
+          enabled: false,
+        },
+        plotOptions: {
+          pie: {
+            expandOnClick: false,
+            donut: {
+              labels: {
+                show: true,
+                name: {
+                  show: false,
+                  fontSize: "12px",
+                },
+                value: {
+                  fontSize: " 12px",
+                  color: "white",
+                  offsetY: 5,
+                },
+                total: {
+                  show: true,
+                  showAlways: true,
+                  formatter: function (w) {
+                    console.log(w);
+                    return w.config.series[0];
+                  },
+                },
+              },
+            },
+          },
+        },
+        dataLabels: {
+          enabled: false,
+          style: {
+            fontSize: "10px",
+          },
+        },
+      }),
+    []
+  );
+  useEffect(() => {
+    setChartSeries([7.8, 2.2]);
+  }, []);
 
   // utility fn
   const onRightBtn = () => {
@@ -137,11 +216,20 @@ export default function SliderComponent({
     toggleExit();
     setVisible((prev) => (prev -= 6));
   };
-  const onMouseEnter = () => {
+  const showBtn = () => {
     setIsHover(true);
   };
-  const onMouseLeave = () => {
+  const hideBtn = () => {
     setIsHover(false);
+  };
+  const setPosterConfig = (movie: IResult) => {
+    setLayoutId(movie.id + "");
+    setChartSeries([movie.vote_average, 10 - movie.vote_average]);
+  };
+
+  const removePosterConfig = () => {
+    setLayoutId("");
+    setChartSeries([]);
   };
   const toggleExit = () => setIsExit((prev) => !prev);
   const getSlider = () => {
@@ -165,13 +253,13 @@ export default function SliderComponent({
         return result[0];
       });
 
-      return filteredId;
+      return filteredId.length > 3 ? filteredId.slice(0, 3) : filteredId;
     }
     return;
   };
   //renderer
   return (
-    <Slider onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
+    <Slider onMouseEnter={showBtn} onMouseLeave={hideBtn}>
       <AnimatePresence
         custom={isLeft}
         initial={false}
@@ -188,17 +276,23 @@ export default function SliderComponent({
         >
           {getSlider()?.map((v, i) => (
             <PosterBox
-              onMouseEnter={() => setLayoutId(v.id + "")}
-              onMouseLeave={() => setLayoutId("")}
+              onMouseEnter={() => setPosterConfig(v)}
+              onMouseLeave={removePosterConfig}
               whileHover={{ scale: 1.1 }}
               key={v.id}
               imgsrc={`${imgBaseUrl}${posterSize}` + v.poster_path}
             >
               {parseInt(layoutId) === v.id && (
                 <HoveredBox>
+                  <Vote>
+                    <Chart
+                      options={chartOption}
+                      series={chartSeries}
+                      type="donut"
+                      width="100%"
+                    />
+                  </Vote>
                   <MovieInfoBox>
-                    <Vote>Vote Average: {v.vote_average}</Vote>
-
                     <Title>{v.title}</Title>
                     <GenreBox>
                       {getGenreString(v.genre_ids)?.map((obj) => (

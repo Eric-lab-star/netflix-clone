@@ -63,7 +63,7 @@ export async function getConfig() {
   return json;
 }
 
-export async function getGenre<IGenres>() {
+export async function getGenre() {
   const response = await fetch(
     `${BASEURL}/genre/movie/list?api_key=${APIKEY}&language=en-US`
   );
