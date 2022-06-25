@@ -24,8 +24,6 @@ const Main = styled.div`
 function App() {
   const location = useLocation();
   const state = location.state as { backgroundLocation?: Location };
-  console.log(state?.backgroundLocation);
-
   return (
     <Main>
       <Routes location={state?.backgroundLocation || location}>

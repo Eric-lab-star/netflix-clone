@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { useQuery } from "react-query";
-import { Outlet } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { getConfig, getMovies, IConfig, IMovies } from "../api";
 import Logo from "../components/Logo";
@@ -58,6 +58,7 @@ export default function Home() {
   const backdropSize3 = config?.images.backdrop_sizes[3];
   const posterSize = config?.images.poster_sizes[3];
   const backdropImgURL = movieData?.results[randomNum].backdrop_path;
+
   return (
     <Main>
       {isMovieData && isConfig ? (

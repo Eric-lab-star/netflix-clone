@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Chart from "react-apexcharts";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
@@ -33,7 +33,7 @@ const PosterBox = styled(motion.div)<{ imgsrc: String }>`
   &:first-child {
     transform-origin: center left;
   }
-  &:last-child {
+  & :last-child {
     transform-origin: center right;
   }
 `;
@@ -59,7 +59,7 @@ const HoveredBox = styled(motion.div)`
   width: 100%;
   box-sizing: border-box;
   display: grid;
-  grid-template-columns: 1fr 2fr;
+  grid-template-columns: 80px 1fr;
   align-items: center;
   background-color: black;
   position: absolute;
@@ -71,30 +71,27 @@ const MovieInfoBox = styled.div`
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
-  position: relative;
-  left: -30px;
+  margin-left: -30px;
 `;
-const Vote = styled.div`
-  position: relative;
-  left: -20px;
-`;
+const Vote = styled.div``;
 
 const GenreBox = styled.div`
   display: flex;
   align-items: center;
 `;
 const Genre = styled.div`
-  padding: 3px;
+  padding: 2px;
   white-space: nowrap;
   border-radius: 3px;
   background-color: #686de0;
   color: #30336b;
-  font-size: 12px;
+  font-size: 10px;
   margin: 0 2.5px;
 `;
 const Title = styled.div`
+  padding: 3px;
   margin-bottom: 5px;
-  font-size: 18px;
+  font-size: 13px;
 `;
 const LeftBtn = styled(ButtonBox)<{ isHover: Boolean }>`
   opacity: ${(props) => (props.isHover ? 1 : 0)};
@@ -142,9 +139,10 @@ export default function SliderComponent({
   );
   const [chartOption, setChartOption] = useState<ApexCharts.ApexOptions>();
   const [chartSeries, setChartSeries] = useState<number[]>();
+
   const navigate = useNavigate();
   const location = useLocation();
-
+  //set chart option
   useEffect(
     () =>
       setChartOption({
@@ -157,6 +155,7 @@ export default function SliderComponent({
           colors: ["black"],
         },
         chart: {
+          offsetX: -20,
           type: "donut",
         },
         legend: {
@@ -200,9 +199,6 @@ export default function SliderComponent({
       }),
     []
   );
-  useEffect(() => {
-    setChartSeries([7.8, 2.2]);
-  }, []);
 
   // utility fn
   const onRightBtn = () => {
@@ -228,11 +224,6 @@ export default function SliderComponent({
     setLayoutId(movie.id + "");
     setChartSeries([movie.vote_average, 10 - movie.vote_average]);
   };
-
-  const removePosterConfig = () => {
-    setLayoutId("");
-    setChartSeries([]);
-  };
   const toggleExit = () => setIsExit((prev) => !prev);
   const getSlider = () => {
     if (movieData) {
@@ -245,6 +236,14 @@ export default function SliderComponent({
     }
     return;
   };
+  const onMouseLeave = () => {
+    setLayoutId("");
+  };
+  const clickPoster = (v: IResult) => {
+    navigate(`/movieDetail/${v.id}`, {
+      state: { backgroundLocation: location, movie: v },
+    });
+  };
 
   const getGenreString = (inputIdArray: Number[]) => {
     if (isGenreObjLoading) return;
@@ -255,7 +254,7 @@ export default function SliderComponent({
         return result[0];
       });
 
-      return filteredId.length > 3 ? filteredId.slice(0, 3) : filteredId;
+      return filteredId.length > 2 ? filteredId.slice(0, 2) : filteredId;
     }
     return;
   };
@@ -279,15 +278,11 @@ export default function SliderComponent({
           {getSlider()?.map((v, i) => (
             <PosterBox
               layoutId={v.id + ""}
-              onClick={() =>
-                navigate(`/movieDetail/${v.id}`, {
-                  state: { backgroundLocation: location },
-                })
-              }
+              onClick={() => clickPoster(v)}
               key={v.id}
               onMouseEnter={() => setPosterConfig(v)}
-              onMouseLeave={removePosterConfig}
-              whileHover={{ scale: 1.1, zIndex: 1 }}
+              onMouseLeave={onMouseLeave}
+              whileHover={{ scale: 1.2, zIndex: 1 }}
               imgsrc={`${imgBaseUrl}${posterSize}` + v.poster_path}
             >
               {parseInt(layoutId) === v.id && (
