@@ -56,7 +56,7 @@ export default function Home() {
   );
   const imgBaseUrl = config?.images.base_url;
   const backdropSize3 = config?.images.backdrop_sizes[3];
-  const posterSize = config?.images.poster_sizes[3];
+  const posterSize = config?.images.poster_sizes[5];
   const backdropImgURL = movieData?.results[randomNum].backdrop_path;
 
   return (

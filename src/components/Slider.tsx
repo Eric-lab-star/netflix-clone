@@ -241,7 +241,12 @@ export default function SliderComponent({
   };
   const clickPoster = (v: IResult) => {
     navigate(`/movieDetail/${v.id}`, {
-      state: { backgroundLocation: location, movie: v },
+      state: {
+        backgroundLocation: location,
+        movie: v,
+        img: `${imgBaseUrl}${posterSize}`,
+        genres: getGenreString(v.genre_ids),
+      },
     });
   };
 
