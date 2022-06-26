@@ -1,21 +1,26 @@
 import { motion } from "framer-motion";
 import { useQuery } from "react-query";
-import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { getConfig, getMovies, IConfig, IMovies } from "../api";
+import {
+  getConfig,
+  getNowPlaying,
+  getPopular,
+  getUpComing,
+  IConfig,
+  IMovies,
+} from "../api";
 import Logo from "../components/Logo";
 import SliderComponent from "../components/Slider";
 
 const Main = styled.div`
   width: 100vw;
-  height: 100vh;
   display: flex;
   flex-direction: column;
 `;
 
 const BigImg = styled.div<{ backgroundImg: string }>`
   width: 100%;
-  height: 90%;
+  height: 90vh;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -43,47 +48,89 @@ const Loading = styled(motion.svg)`
   width: 20vw;
 `;
 
+const Content = styled.div`
+  position: absolute;
+  width: 100%;
+  top: 70vh;
+`;
+
+const Footer = styled.div`
+  text-align: center;
+  line-height: 25px;
+  width: 100%;
+  height: 50px;
+  margin-top: 100px;
+  font-size: 13px;
+`;
 const randomNum = Math.floor(Math.random() * 20);
 
 export default function Home() {
-  const { data: movieData, isLoading: isMovieData } = useQuery<IMovies>(
+  const { data: nowPlaying, isLoading: isMovieData } = useQuery<IMovies>(
     ["movies", "now_playing"],
-    getMovies
+    getNowPlaying
   );
+
+  const { data: upComing, isLoading: isUpcoming } = useQuery<IMovies>(
+    ["movies", "upComing"],
+    getUpComing
+  );
+  const { data: popular, isLoading: isPopular } = useQuery<IMovies>(
+    ["movies", "popluar"],
+    getPopular
+  );
+
   const { data: config, isLoading: isConfig } = useQuery<IConfig>(
     "config",
     getConfig
   );
+
   const imgBaseUrl = config?.images.base_url;
   const backdropSize3 = config?.images.backdrop_sizes[3];
   const posterSize = config?.images.poster_sizes[5];
-  const backdropImgURL = movieData?.results[randomNum].backdrop_path;
+  const backdropImgURL = nowPlaying?.results[randomNum].backdrop_path;
 
   return (
     <Main>
-      {isMovieData && isConfig ? (
+      {isMovieData && isConfig && isUpcoming && isPopular ? (
         <Loading>
           <Logo />
         </Loading>
       ) : (
         <>
-          {movieData ? (
+          {nowPlaying ? (
             <BigImg
               backgroundImg={`${imgBaseUrl}${backdropSize3}${backdropImgURL}`}
             >
-              <Title>{movieData.results[randomNum].title}</Title>
+              <Title>{nowPlaying.results[randomNum].title}</Title>
               <MovieDetail>
-                {movieData.results[randomNum].overview.length < 100
-                  ? movieData.results[randomNum].overview
-                  : movieData.results[randomNum].overview.slice(0, 100) + "..."}
+                {nowPlaying.results[randomNum].overview.length < 100
+                  ? nowPlaying.results[randomNum].overview
+                  : nowPlaying.results[randomNum].overview.slice(0, 100) +
+                    "..."}
               </MovieDetail>
             </BigImg>
           ) : null}
-          <SliderComponent
-            movieData={movieData}
-            imgBaseUrl={imgBaseUrl}
-            posterSize={posterSize}
-          />
+          <Content>
+            <SliderComponent
+              sliderName={"Now Playing"}
+              movieData={nowPlaying}
+              imgBaseUrl={imgBaseUrl}
+              posterSize={posterSize}
+            />
+            <SliderComponent
+              sliderName={"Up Coming"}
+              movieData={upComing}
+              imgBaseUrl={imgBaseUrl}
+              posterSize={posterSize}
+            />
+            <SliderComponent
+              sliderName={"Popular"}
+              movieData={popular}
+              imgBaseUrl={imgBaseUrl}
+              posterSize={posterSize}
+            />
+            <Footer>Netflix Clone</Footer>
+          </Content>
         </>
       )}
     </Main>

@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
 import { useLocation, useNavigate } from "react-router-dom";
 import Chart from "react-apexcharts";
 import { useEffect, useState } from "react";
@@ -8,12 +8,24 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
 import { useQuery } from "react-query";
 const PosterHeight = 360;
+const SliderName = styled.div`
+  position: relative;
+  top: 20px;
+  left: 50px;
+  font-size: 20px;
+`;
+
 const Slider = styled.div`
   position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
-  top: 100px;
+  height: ${PosterHeight + "px"};
+  width: 100%;
+  margin: 40px 0px;
+  &:first-child {
+    margin: 0px;
+  }
 `;
 
 const SliderGrid = styled(motion.div)`
@@ -22,7 +34,7 @@ const SliderGrid = styled(motion.div)`
   box-sizing: border-box;
   width: 100%;
   height: ${PosterHeight}px;
-  gap: 10px;
+  gap: 20px;
   grid-template-columns: repeat(6, 1fr);
 `;
 
@@ -117,15 +129,17 @@ const VSlider = {
 };
 
 interface ISliderProps {
-  movieData: IMovies | undefined;
-  imgBaseUrl: string | undefined;
-  posterSize: string | undefined;
+  movieData?: IMovies;
+  imgBaseUrl?: string;
+  posterSize?: string;
+  sliderName?: string;
 }
 
 export default function SliderComponent({
   movieData,
   imgBaseUrl,
   posterSize,
+  sliderName,
 }: ISliderProps) {
   //var
   const [isHover, setIsHover] = useState(false);
@@ -263,68 +277,72 @@ export default function SliderComponent({
     }
     return;
   };
+
   //renderer
   return (
-    <Slider onMouseEnter={showBtn} onMouseLeave={hideBtn}>
-      <AnimatePresence
-        custom={isLeft}
-        initial={false}
-        onExitComplete={toggleExit}
-      >
-        <SliderGrid
+    <LayoutGroup id={Date.now() + ""}>
+      <SliderName>{sliderName}</SliderName>
+      <Slider onMouseEnter={showBtn} onMouseLeave={hideBtn}>
+        <AnimatePresence
           custom={isLeft}
-          key={visible}
-          variants={VSlider}
-          animate="show"
-          initial="hidden"
-          exit="exit"
-          transition={{ type: "tween", duration: 1 }}
+          initial={false}
+          onExitComplete={toggleExit}
         >
-          {getSlider()?.map((v, i) => (
-            <PosterBox
-              layoutId={v.id + ""}
-              onClick={() => clickPoster(v)}
-              key={v.id}
-              onMouseEnter={() => setPosterConfig(v)}
-              onMouseLeave={onMouseLeave}
-              whileHover={{ scale: 1.2, zIndex: 1 }}
-              imgsrc={`${imgBaseUrl}${posterSize}` + v.poster_path}
-            >
-              {parseInt(layoutId) === v.id && (
-                <HoveredBox>
-                  <Vote>
-                    <Chart
-                      options={chartOption}
-                      series={chartSeries}
-                      type="donut"
-                      width="100%"
-                    />
-                  </Vote>
-                  <MovieInfoBox>
-                    <Title>{v.title}</Title>
-                    <GenreBox>
-                      {getGenreString(v.genre_ids)?.map((obj) => (
-                        <Genre key={obj.id}>{obj.name}</Genre>
-                      ))}
-                    </GenreBox>
-                  </MovieInfoBox>
-                </HoveredBox>
-              )}
-            </PosterBox>
-          ))}
-        </SliderGrid>
-      </AnimatePresence>
+          <SliderGrid
+            custom={isLeft}
+            key={visible}
+            variants={VSlider}
+            animate="show"
+            initial="hidden"
+            exit="exit"
+            transition={{ type: "tween", duration: 1 }}
+          >
+            {getSlider()?.map((v, i) => (
+              <PosterBox
+                layoutId={v.id + ""}
+                onClick={() => clickPoster(v)}
+                key={v.id}
+                onMouseEnter={() => setPosterConfig(v)}
+                onMouseLeave={onMouseLeave}
+                whileHover={{ scale: 1.1, zIndex: 1 }}
+                imgsrc={`${imgBaseUrl}${posterSize}` + v.poster_path}
+              >
+                {parseInt(layoutId) === v.id && (
+                  <HoveredBox>
+                    <Vote>
+                      <Chart
+                        options={chartOption}
+                        series={chartSeries}
+                        type="donut"
+                        width="100%"
+                      />
+                    </Vote>
+                    <MovieInfoBox>
+                      <Title>{v.title}</Title>
+                      <GenreBox>
+                        {getGenreString(v.genre_ids)?.map((obj) => (
+                          <Genre key={obj.id}>{obj.name}</Genre>
+                        ))}
+                      </GenreBox>
+                    </MovieInfoBox>
+                  </HoveredBox>
+                )}
+              </PosterBox>
+            ))}
+          </SliderGrid>
+        </AnimatePresence>
 
-      <LeftBtn isHover={isHover}>
-        <button onClick={onLeftBtn}>
-          <FontAwesomeIcon icon={solid("chevron-left")} />
-        </button>
-      </LeftBtn>
-      <RightBtn isHover={isHover}>
-        <button onClick={onRightBtn}>
-          <FontAwesomeIcon icon={solid("chevron-right")} />
-        </button>
-      </RightBtn>
-    </Slider>
+        <LeftBtn isHover={isHover}>
+          <button onClick={onLeftBtn}>
+            <FontAwesomeIcon icon={solid("chevron-left")} />
+          </button>
+        </LeftBtn>
+        <RightBtn isHover={isHover}>
+          <button onClick={onRightBtn}>
+            <FontAwesomeIcon icon={solid("chevron-right")} />
+          </button>
+        </RightBtn>
+      </Slider>
+    </LayoutGroup>
   );
 }

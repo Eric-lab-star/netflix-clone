@@ -15,7 +15,7 @@ window.onbeforeunload = function () {
 
 const Main = styled.div`
   width: 100vw;
-  height: 200vh;
+  height: 110vh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -29,6 +29,7 @@ function App() {
       <Routes location={state?.backgroundLocation || location}>
         <Route path="/" element={<Header />}>
           <Route index element={<Home />} />
+          <Route path="/search" element={<Search />}></Route>
           <Route path="*" element={<div>nothing to show</div>} />
         </Route>
       </Routes>

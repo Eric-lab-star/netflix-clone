@@ -1,4 +1,4 @@
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import {
   AnimatePresence,
@@ -11,6 +11,7 @@ import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
 import Logo from "./Logo";
+import { SubmitHandler, useForm } from "react-hook-form";
 
 const Nav = styled(motion.div)`
   background-color: ${(props) => props.theme.black.darker};
@@ -38,7 +39,8 @@ const Contents = styled.div`
   position: absolute;
 `;
 
-const SearchBtn = styled(motion.button)`
+const SearchBtn = styled(motion.div)`
+  display: inline-block;
   border-style: none;
   width: 1.5em;
   height: 1.5em;
@@ -64,11 +66,15 @@ const links = [
   { id: `Trending`, location: "/trending" },
   { id: `My List`, location: "/myList" },
 ];
+interface IForm {
+  keyword: string;
+}
 
 export default function Header() {
   const { scrollYProgress } = useViewportScroll();
-
+  const { register, handleSubmit } = useForm<IForm>();
   const location = useLocation();
+  const navigate = useNavigate();
   const [clicked, setClicked] = useState(Boolean(false));
   const color = useTransform(
     scrollYProgress,
@@ -80,6 +86,9 @@ export default function Header() {
   );
   const onClick = () => {
     setClicked((prev) => (prev = !prev));
+  };
+  const onSubmit: SubmitHandler<IForm> = (data) => {
+    navigate(`search?keyword=${data.keyword}`);
   };
   return (
     <>
@@ -93,20 +102,23 @@ export default function Header() {
           ))}
         </Column>
         <Column>
-          <SearchBtn animate={{ x: clicked ? 23 : 0 }} onClick={onClick}>
-            <FontAwesomeIcon icon={solid("magnifying-glass")} />
-          </SearchBtn>
-          <AnimatePresence>
-            {clicked && (
-              <SearchInput
-                placeholder="Search by Title"
-                initial={{ width: 0 }}
-                animate={{ width: "15em" }}
-                exit={{ width: 0, opacity: 0 }}
-                transition={{ type: "tween" }}
-              />
-            )}
-          </AnimatePresence>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <SearchBtn animate={{ x: clicked ? 23 : 0 }} onClick={onClick}>
+              <FontAwesomeIcon icon={solid("magnifying-glass")} />
+            </SearchBtn>
+            <AnimatePresence>
+              {clicked && (
+                <SearchInput
+                  placeholder="Search by Title"
+                  initial={{ width: 0 }}
+                  animate={{ width: "15em" }}
+                  exit={{ width: 0, opacity: 0 }}
+                  transition={{ type: "tween" }}
+                  {...register("keyword", { required: true })}
+                />
+              )}
+            </AnimatePresence>
+          </form>
         </Column>
       </Nav>
       <Contents>

@@ -1,4 +1,5 @@
-import { AnimatePresence, motion, useViewportScroll } from "framer-motion";
+import { motion } from "framer-motion";
+import { useQuery } from "react-query";
 import {
   useLocation,
   useMatch,
@@ -6,37 +7,43 @@ import {
   useParams,
 } from "react-router-dom";
 import styled from "styled-components";
-import { IResult } from "../api";
+import { getMovieDetail, IDetail, IResult } from "../api";
 
 const { innerWidth, innerHeight } = window;
 const Overlay = styled(motion.div)`
-  display: fixed;
+  position: fixed;
   width: 100%;
   height: 100%;
   background-color: black;
   z-index: 1;
 `;
 const PopUp = styled(motion.div)`
-  width: ${innerWidth / 2}px;
-  height: ${innerHeight / 2.5}px;
-  position: absolute;
-  background-color: black;
+  width: ${innerWidth / 1.9}px;
+  height: ${innerHeight / 1.3}px;
+  padding: 20px 20px;
+  position: fixed;
+  background-color: #16a085;
+  border-radius: 8px;
   z-index: 2;
   display: grid;
-  grid-template-columns: 1fr 2fr;
+  gap: 10px;
+  grid-template-rows: 2fr 1fr;
 `;
 
 const Img = styled.div<{ img: string }>`
   background-image: ${(props) => `url(${props.img})`};
-  background-size: contain;
+  background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  border: 1px solid black;
+  border-radius: 8px;
 `;
 const MovieInfo = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  background-color: #1abc9c;
+  padding: 10px;
+  border-radius: 7px;
 `;
 const Title = styled.h1`
   text-align: center;
@@ -45,29 +52,45 @@ const Title = styled.h1`
   box-sizing: border-box;
 `;
 
-const OverView = styled.div``;
+const OverView = styled.div`
+  word-break: break-all;
+`;
 const MetaInfo = styled.div`
   width: 100%;
   display: flex;
   align-items: center;
+  justify-content: center;
 `;
 
 const Info = styled.div`
-  width: 30%;
+  display: flex;
+  width: 34%;
+  justify-content: center;
+  &:last-child {
+    justify-content: flex-end;
+  }
+  &:first-child {
+    justify-content: flex-start;
+  }
 `;
 const SubTitle = styled.div`
-  font-size: 18px;
+  font-size: 15px;
   margin-bottom: 5px;
 `;
 const Content = styled.div`
-  font-size: 15px;
+  display: inline-block;
+  font-size: 14px;
   margin-bottom: 10px;
+  margin-right: 10px;
+  & span {
+    margin: 3px 10px;
+  }
 `;
 
 const Genre = styled.div`
-  font-size: 15px;
-  display: inline-block;
-  margin-right: 10px;
+  background-color: #16a085;
+  padding: 3px;
+  border-radius: 3px;
 `;
 
 function Screen() {
@@ -88,7 +111,9 @@ function Screen() {
 
 export default function MovieDetail() {
   const { id } = useParams();
-  const { scrollY } = useViewportScroll();
+  const { data, isLoading } = useQuery<IDetail>(["movies", "detail"], () =>
+    getMovieDetail(id as string)
+  );
   const location = useLocation();
   const state = location.state as {
     movie: IResult;
@@ -96,38 +121,50 @@ export default function MovieDetail() {
     genres: { id: number; name: string }[];
   };
   return (
-    <AnimatePresence>
+    <>
       <Screen />
-      <PopUp
-        key="popup"
-        initial={{ top: scrollY.get() + 200 }}
-        layoutId={id + ""}
-      >
-        <Img img={state.img + state.movie.poster_path} />
+      <PopUp key="popup" initial={{ top: 70 }}>
+        <Img img={state.img + state.movie.backdrop_path} />
         <MovieInfo>
-          <Title>{state.movie.title}</Title>
-          <OverView>
-            <SubTitle>Overview</SubTitle>
-            <Content>{state.movie.overview}</Content>
-          </OverView>
           <MetaInfo>
             <Info>
-              <SubTitle>Released Date</SubTitle>
-              <Content>{state.movie.release_date}</Content>
+              <Content>Date: {state.movie.release_date}</Content>
             </Info>
             <Info>
-              <SubTitle>Genres</SubTitle>
               {state.genres.map((genre) => (
-                <Genre key={genre.id}>{genre.name}</Genre>
+                <Content key={genre.id}>
+                  <Genre>{genre.name}</Genre>
+                </Content>
               ))}
             </Info>
             <Info>
-              <SubTitle>Vote Average</SubTitle>
-              <Content>{state.movie.vote_average}</Content>
+              <Content>Score: {state.movie.vote_average}</Content>
             </Info>
           </MetaInfo>
+          <Title>{state.movie.title}</Title>
+          <OverView>
+            <Content>{state.movie.overview}</Content>
+          </OverView>
+
+          {!isLoading && (
+            <>
+              <SubTitle>Production Companies</SubTitle>
+              <Content>
+                {data?.production_companies.map((v) => (
+                  <span key={v.name}>{v.name}</span>
+                ))}
+              </Content>
+            </>
+          )}
+          {!isLoading && data?.homepage && (
+            <Content>
+              <a href={data?.homepage as string}>
+                Go to Offical Website &rarr;
+              </a>
+            </Content>
+          )}
         </MovieInfo>
       </PopUp>
-    </AnimatePresence>
+    </>
   );
 }
