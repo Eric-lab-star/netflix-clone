@@ -29,14 +29,15 @@ function App() {
       <Routes location={state?.backgroundLocation || location}>
         <Route path="/" element={<Header />}>
           <Route index element={<Home />} />
-          <Route path="/search" element={<Search />}></Route>
+          <Route path="/search" element={<Search />} />
+          <Route path="/tv" element={<Tv />} />
           <Route path="*" element={<div>nothing to show</div>} />
         </Route>
       </Routes>
 
       {state?.backgroundLocation && (
         <Routes>
-          <Route path="/movieDetail/:id" element={<MovieDetail />} />
+          <Route path="/detail/:id" element={<MovieDetail />} />
         </Routes>
       )}
     </Main>

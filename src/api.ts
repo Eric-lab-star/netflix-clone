@@ -1,7 +1,7 @@
 const APIKEY = "06ad24f20ddddf36191cdf82e51a81ee";
 const BASEURL = "https://api.themoviedb.org/3";
 
-export interface IResult {
+export interface IMovieResult {
   adult: boolean;
   backdrop_path: string;
   genre_ids: number[];
@@ -13,9 +13,11 @@ export interface IResult {
   poster_path: string;
   release_date: string;
   title: string;
+  name?: string;
   video: false;
   vote_average: number;
   vote_count: number;
+  first_air_date?: string;
 }
 interface ICompanies {
   id: number;
@@ -34,7 +36,7 @@ interface ILanguage {
   name: string;
 }
 
-export interface IDetail {
+export interface IMovieDetail {
   adult: boolean;
   backdrop_path: string;
   budget: number;
@@ -66,7 +68,7 @@ export interface IMovies {
     maximum: string;
     minimum: string;
   };
-  results: IResult[];
+  results: IMovieResult[];
   page: number;
   total_pages: number;
   total_results: number;
@@ -85,13 +87,76 @@ export interface IConfig {
   change_keys: string[];
 }
 
+export interface ITvDetail {
+  adult: boolean;
+  backdrop_path: string;
+  created_by: {
+    id: number;
+    credit_id: string;
+    name: string;
+    gender: number;
+    profile_path: string;
+  }[];
+  episode_run_time: number[];
+  first_air_date: string;
+  genres: IGenre[];
+  homepage: string;
+  id: 76479;
+  in_production: true;
+  languages: string[];
+  last_air_date: string;
+  name: string;
+  poster_path: string;
+  production_companies: ICompanies[];
+  production_countries: ICountry[];
+  spoken_languages: ILanguage[];
+  status: string;
+  tagline: string;
+  type: string;
+  vote_average: number;
+  vote_count: number;
+}
+
+export interface ITvResult {
+  release_date?: string;
+  backdrop_path: string;
+  first_air_date: string;
+  genre_ids: number[];
+  id: number;
+  name: string;
+  title?: string;
+  origin_country: string[];
+  original_language: string;
+  original_name: string;
+  overview: string;
+  popularity: number;
+  poster_path: string;
+  vote_average: number;
+  vote_count: number;
+}
+export interface ITvOnair {
+  page: number;
+  results: ITvResult[];
+  total_pages: number;
+  total_results: number;
+}
+
 interface IGenre {
   id: number;
   name: string;
 }
+
 export interface IGenres {
   genres: IGenre[];
 }
+
+export interface ITvPopular {
+  page: number;
+  results: ITvResult[];
+  total_pages: number;
+  total_results: number;
+}
+
 export async function getNowPlaying() {
   const response = await fetch(
     `${BASEURL}/movie/now_playing?api_key=${APIKEY}&language=en-US&page=1`
@@ -143,5 +208,37 @@ export async function getSearch(keyword: string) {
     `${BASEURL}/search/movie?api_key=${APIKEY}&language=en-US&query=${keyword}&page=1&include_adult=false`
   );
   const json = await response.json();
+  return json;
+}
+
+export async function getTvOnair() {
+  const response = await fetch(
+    `${BASEURL}/tv/on_the_air?api_key=${APIKEY}&language=en-US&page=1`
+  );
+  const json = await response.json();
+  return json;
+}
+
+export async function getTvDetail(id: string) {
+  const response = await fetch(
+    `${BASEURL}/tv/${id}?api_key=${APIKEY}&language=en-US`
+  );
+  const json = response.json();
+  return json;
+}
+
+export async function getTvPopular() {
+  const response = await fetch(
+    `${BASEURL}/tv/popular?api_key=${APIKEY}&language=en-US&page=1`
+  );
+  const json = await response.json();
+  return json;
+}
+
+export async function getTvTop() {
+  const response = await fetch(
+    `${BASEURL}/tv/top_rated?api_key=${APIKEY}&language=en-US&page=1`
+  );
+  const json = response.json();
   return json;
 }

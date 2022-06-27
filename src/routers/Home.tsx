@@ -9,6 +9,7 @@ import {
   IConfig,
   IMovies,
 } from "../api";
+import FooterComponent from "../components/Footer";
 import Logo from "../components/Logo";
 import SliderComponent from "../components/Slider";
 
@@ -43,9 +44,9 @@ const MovieDetail = styled.div`
 `;
 const Loading = styled(motion.svg)`
   position: relative;
-  left: 40%;
-  top: 40%;
-  width: 20vw;
+  left: 45%;
+  top: 100px;
+  width: 10vw;
 `;
 
 const Content = styled.div`
@@ -54,22 +55,14 @@ const Content = styled.div`
   top: 70vh;
 `;
 
-const Footer = styled.div`
-  text-align: center;
-  line-height: 25px;
-  width: 100%;
-  height: 50px;
-  margin-top: 100px;
-  font-size: 13px;
-`;
 const randomNum = Math.floor(Math.random() * 20);
 
 export default function Home() {
+  //APIs
   const { data: nowPlaying, isLoading: isMovieData } = useQuery<IMovies>(
     ["movies", "now_playing"],
     getNowPlaying
   );
-
   const { data: upComing, isLoading: isUpcoming } = useQuery<IMovies>(
     ["movies", "upComing"],
     getUpComing
@@ -78,7 +71,6 @@ export default function Home() {
     ["movies", "popluar"],
     getPopular
   );
-
   const { data: config, isLoading: isConfig } = useQuery<IConfig>(
     "config",
     getConfig
@@ -113,23 +105,23 @@ export default function Home() {
           <Content>
             <SliderComponent
               sliderName={"Now Playing"}
-              movieData={nowPlaying}
+              data={nowPlaying}
               imgBaseUrl={imgBaseUrl}
               posterSize={posterSize}
             />
             <SliderComponent
-              sliderName={"Up Coming"}
-              movieData={upComing}
+              sliderName={"Upcoming"}
+              data={upComing}
               imgBaseUrl={imgBaseUrl}
               posterSize={posterSize}
             />
             <SliderComponent
               sliderName={"Popular"}
-              movieData={popular}
+              data={popular}
               imgBaseUrl={imgBaseUrl}
               posterSize={posterSize}
             />
-            <Footer>Netflix Clone</Footer>
+            <FooterComponent />
           </Content>
         </>
       )}

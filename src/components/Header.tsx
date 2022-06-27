@@ -62,9 +62,6 @@ const SearchInput = styled(motion.input)`
 const links = [
   { id: "Home", location: "/" },
   { id: `TV Shows`, location: "/tv" },
-  { id: `Movies`, location: "/movies" },
-  { id: `Trending`, location: "/trending" },
-  { id: `My List`, location: "/myList" },
 ];
 interface IForm {
   keyword: string;

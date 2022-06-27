@@ -7,7 +7,14 @@ import {
   useParams,
 } from "react-router-dom";
 import styled from "styled-components";
-import { getMovieDetail, IDetail, IResult } from "../api";
+import {
+  getMovieDetail,
+  getTvDetail,
+  IMovieDetail,
+  IMovieResult,
+  ITvDetail,
+  ITvResult,
+} from "../api";
 
 const { innerWidth, innerHeight } = window;
 const Overlay = styled(motion.div)`
@@ -22,7 +29,7 @@ const PopUp = styled(motion.div)`
   height: ${innerHeight / 1.3}px;
   padding: 20px 20px;
   position: fixed;
-  background-color: #16a085;
+  background-color: #c0392b;
   border-radius: 8px;
   z-index: 2;
   display: grid;
@@ -41,7 +48,7 @@ const MovieInfo = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  background-color: #1abc9c;
+  background-color: #e74c3c;
   padding: 10px;
   border-radius: 7px;
 `;
@@ -88,16 +95,15 @@ const Content = styled.div`
 `;
 
 const Genre = styled.div`
-  background-color: #16a085;
+  background-color: #e67e22;
   padding: 3px;
   border-radius: 3px;
 `;
 
 function Screen() {
-  const path = useMatch("movieDetail/:id");
   const navigate = useNavigate();
   const onClick = () => {
-    if (path) navigate(-1);
+    navigate(-1);
   };
   return (
     <Overlay
@@ -111,12 +117,18 @@ function Screen() {
 
 export default function MovieDetail() {
   const { id } = useParams();
-  const { data, isLoading } = useQuery<IDetail>(["movies", "detail"], () =>
-    getMovieDetail(id as string)
+  const { data: movieDetail } = useQuery<IMovieDetail>(
+    ["movies", "detail"],
+    () => getMovieDetail(id as string)
   );
+
+  const { data: tvDetail } = useQuery<ITvDetail>(["tv", "detail"], () =>
+    getTvDetail(id as string)
+  );
+
   const location = useLocation();
   const state = location.state as {
-    movie: IResult;
+    result: IMovieResult | ITvResult;
     img: string;
     genres: { id: number; name: string }[];
   };
@@ -124,11 +136,16 @@ export default function MovieDetail() {
     <>
       <Screen />
       <PopUp key="popup" initial={{ top: 70 }}>
-        <Img img={state.img + state.movie.backdrop_path} />
+        <Img img={state.img + state.result?.backdrop_path} />
         <MovieInfo>
           <MetaInfo>
             <Info>
-              <Content>Date: {state.movie.release_date}</Content>
+              <Content>
+                Release Date:
+                {state.result?.release_date
+                  ? state.result?.release_date
+                  : state.result?.first_air_date}
+              </Content>
             </Info>
             <Info>
               {state.genres.map((genre) => (
@@ -138,28 +155,34 @@ export default function MovieDetail() {
               ))}
             </Info>
             <Info>
-              <Content>Score: {state.movie.vote_average}</Content>
+              <Content>Score: {state.result?.vote_average}</Content>
             </Info>
           </MetaInfo>
-          <Title>{state.movie.title}</Title>
+          <Title>{state.result?.title}</Title>
           <OverView>
-            <Content>{state.movie.overview}</Content>
+            <Content>{state.result?.overview}</Content>
           </OverView>
-
-          {!isLoading && (
+          {tvDetail?.homepage && movieDetail?.adult === undefined && (
+            <Content>
+              <a href={tvDetail?.homepage as string}>
+                Visit Offical Website &rarr;
+              </a>
+            </Content>
+          )}
+          {movieDetail?.production_companies && tvDetail?.adult === undefined && (
             <>
               <SubTitle>Production Companies</SubTitle>
               <Content>
-                {data?.production_companies.map((v) => (
+                {movieDetail?.production_companies.map((v) => (
                   <span key={v.name}>{v.name}</span>
                 ))}
               </Content>
             </>
           )}
-          {!isLoading && data?.homepage && (
+          {movieDetail?.homepage && tvDetail?.adult === undefined && (
             <Content>
-              <a href={data?.homepage as string}>
-                Go to Offical Website &rarr;
+              <a href={movieDetail?.homepage as string}>
+                Visit Offical Website &rarr;
               </a>
             </Content>
           )}

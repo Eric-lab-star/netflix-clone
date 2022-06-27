@@ -3,11 +3,18 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Chart from "react-apexcharts";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-import { getGenre, IGenres, IMovies, IResult } from "../api";
+import {
+  getGenre,
+  IGenres,
+  IMovieResult,
+  IMovies,
+  ITvOnair,
+  ITvResult,
+} from "../api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
 import { useQuery } from "react-query";
-const PosterHeight = 360;
+const PosterHeight = 410;
 const SliderName = styled.div`
   position: relative;
   top: 20px;
@@ -129,14 +136,14 @@ const VSlider = {
 };
 
 interface ISliderProps {
-  movieData?: IMovies;
+  data?: IMovies | ITvOnair;
   imgBaseUrl?: string;
   posterSize?: string;
   sliderName?: string;
 }
 
 export default function SliderComponent({
-  movieData,
+  data,
   imgBaseUrl,
   posterSize,
   sliderName,
@@ -234,17 +241,17 @@ export default function SliderComponent({
   const hideBtn = () => {
     setIsHover(false);
   };
-  const setPosterConfig = (movie: IResult) => {
-    setLayoutId(movie.id + "");
-    setChartSeries([movie.vote_average, 10 - movie.vote_average]);
+  const setPosterConfig = (result: IMovieResult | ITvResult) => {
+    setLayoutId(result.id + "");
+    setChartSeries([result.vote_average, 10 - result.vote_average]);
   };
   const toggleExit = () => setIsExit((prev) => !prev);
   const getSlider = () => {
-    if (movieData) {
+    if (data) {
       const newArray = [];
-      const movieResults = movieData.results;
+      const results = data.results;
       for (let i = 0; i < 6; i++) {
-        newArray.unshift(movieResults?.[(visible - i) % movieResults.length]);
+        newArray.unshift(results?.[(visible - i) % results.length]);
       }
       return newArray;
     }
@@ -253,11 +260,11 @@ export default function SliderComponent({
   const onMouseLeave = () => {
     setLayoutId("");
   };
-  const clickPoster = (v: IResult) => {
-    navigate(`/movieDetail/${v.id}`, {
+  const clickPoster = (v: IMovieResult | ITvResult) => {
+    navigate(`/detail/${v.id}`, {
       state: {
         backgroundLocation: location,
-        movie: v,
+        result: v,
         img: `${imgBaseUrl}${posterSize}`,
         genres: getGenreString(v.genre_ids),
       },
@@ -297,17 +304,17 @@ export default function SliderComponent({
             exit="exit"
             transition={{ type: "tween", duration: 1 }}
           >
-            {getSlider()?.map((v, i) => (
+            {getSlider()?.map((result) => (
               <PosterBox
-                layoutId={v.id + ""}
-                onClick={() => clickPoster(v)}
-                key={v.id}
-                onMouseEnter={() => setPosterConfig(v)}
+                layoutId={result.id + ""}
+                onClick={() => clickPoster(result)}
+                key={result.id}
+                onMouseEnter={() => setPosterConfig(result)}
                 onMouseLeave={onMouseLeave}
                 whileHover={{ scale: 1.1, zIndex: 1 }}
-                imgsrc={`${imgBaseUrl}${posterSize}` + v.poster_path}
+                imgsrc={`${imgBaseUrl}${posterSize}` + result.poster_path}
               >
-                {parseInt(layoutId) === v.id && (
+                {parseInt(layoutId) === result.id && (
                   <HoveredBox>
                     <Vote>
                       <Chart
@@ -318,9 +325,13 @@ export default function SliderComponent({
                       />
                     </Vote>
                     <MovieInfoBox>
-                      <Title>{v.title}</Title>
+                      {result.title ? (
+                        <Title>{result.title}</Title>
+                      ) : (
+                        <Title>{result.name}</Title>
+                      )}
                       <GenreBox>
-                        {getGenreString(v.genre_ids)?.map((obj) => (
+                        {getGenreString(result.genre_ids)?.map((obj) => (
                           <Genre key={obj.id}>{obj.name}</Genre>
                         ))}
                       </GenreBox>
