@@ -58,30 +58,10 @@ export default function Tv() {
         </Loading>
       ) : (
         <>
-          <SliderComponent
-            data={onair}
-            imgBaseUrl={imgBaseUrl}
-            posterSize={posterSize}
-            sliderName={"OnAir"}
-          />
-          <SliderComponent
-            data={popuar}
-            imgBaseUrl={imgBaseUrl}
-            posterSize={posterSize}
-            sliderName={"Popular TVs"}
-          />
-          <SliderComponent
-            data={top}
-            imgBaseUrl={imgBaseUrl}
-            posterSize={posterSize}
-            sliderName={"Top Rated"}
-          />
-          <SliderComponent
-            data={latest}
-            imgBaseUrl={imgBaseUrl}
-            posterSize={posterSize}
-            sliderName={"Latest"}
-          />
+          <SliderComponent data={onair} sliderName={"OnAir"} />
+          <SliderComponent data={popuar} sliderName={"Popular TVs"} />
+          <SliderComponent data={top} sliderName={"Top Rated"} />
+          <SliderComponent data={latest} sliderName={"Latest"} />
           <FooterComponent />
         </>
       )}

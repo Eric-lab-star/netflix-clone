@@ -61,6 +61,7 @@ export interface IMovieDetail {
   video: false;
   vote_average: number;
   vote_count: number;
+  success?: boolean;
 }
 
 export interface IMovies {
@@ -101,7 +102,7 @@ export interface ITvDetail {
   first_air_date: string;
   genres: IGenre[];
   homepage: string;
-  id: 76479;
+  id: number;
   in_production: true;
   languages: string[];
   last_air_date: string;
@@ -115,6 +116,8 @@ export interface ITvDetail {
   type: string;
   vote_average: number;
   vote_count: number;
+  overview: string;
+  success?: boolean;
 }
 
 export interface ITvResult {
@@ -206,6 +209,14 @@ export async function getGenre() {
 export async function getSearch(keyword: string) {
   const response = await fetch(
     `${BASEURL}/search/movie?api_key=${APIKEY}&language=en-US&query=${keyword}&page=1&include_adult=false`
+  );
+  const json = await response.json();
+  return json;
+}
+
+export async function getSearchTv(keyword: string) {
+  const response = await fetch(
+    `${BASEURL}/search/tv?api_key=${APIKEY}&language=en-US&page=1&query=${keyword}&include_adult=false`
   );
   const json = await response.json();
   return json;

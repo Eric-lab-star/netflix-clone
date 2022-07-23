@@ -108,30 +108,10 @@ export default function Home() {
             </BigImg>
           ) : null}
           <Content>
-            <SliderComponent
-              sliderName={"Now Playing"}
-              data={nowPlaying}
-              imgBaseUrl={imgBaseUrl}
-              posterSize={posterSize}
-            />
-            <SliderComponent
-              sliderName={"Upcoming"}
-              data={upComing}
-              imgBaseUrl={imgBaseUrl}
-              posterSize={posterSize}
-            />
-            <SliderComponent
-              sliderName={"Popular"}
-              data={popular}
-              imgBaseUrl={imgBaseUrl}
-              posterSize={posterSize}
-            />
-            <SliderComponent
-              sliderName={"Latest Movie"}
-              data={latest}
-              imgBaseUrl={imgBaseUrl}
-              posterSize={posterSize}
-            />
+            <SliderComponent sliderName={"Now Playing"} data={nowPlaying} />
+            <SliderComponent sliderName={"Upcoming"} data={upComing} />
+            <SliderComponent sliderName={"Popular"} data={popular} />
+            <SliderComponent sliderName={"Latest Movie"} data={latest} />
             <FooterComponent />
           </Content>
         </>

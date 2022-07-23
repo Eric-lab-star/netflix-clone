@@ -4,7 +4,9 @@ import Chart from "react-apexcharts";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import {
+  getConfig,
   getGenre,
+  IConfig,
   IGenres,
   IMovieResult,
   IMovies,
@@ -158,17 +160,10 @@ const VSlider = {
 
 interface ISliderProps {
   data?: IMovies | ITvOnair;
-  imgBaseUrl?: string;
-  posterSize?: string;
   sliderName?: string;
 }
 
-export default function SliderComponent({
-  data,
-  imgBaseUrl,
-  posterSize,
-  sliderName,
-}: ISliderProps) {
+export default function SliderComponent({ data, sliderName }: ISliderProps) {
   //var
   const [isHover, setIsHover] = useState(false);
   const [isLeft, setIsLeft] = useState(false);
@@ -179,6 +174,12 @@ export default function SliderComponent({
     ["movies", "genres"],
     getGenre
   );
+  const { data: config, isLoading: isConfig } = useQuery<IConfig>(
+    ["config"],
+    getConfig
+  );
+  const imgBaseUrl = config?.images.base_url;
+  const posterSize = config?.images.poster_sizes[5];
   const [chartOption, setChartOption] = useState<ApexCharts.ApexOptions>();
   const [chartSeries, setChartSeries] = useState<number[]>();
 
@@ -283,7 +284,11 @@ export default function SliderComponent({
   };
   const clickPoster = (v: IMovieResult | ITvResult) => {
     navigate(
-      location.pathname === "/" ? `movie/detail/${v.id}` : `/tv/detail/${v.id}`,
+      location.pathname === "/"
+        ? `movie/detail/${v.id}`
+        : location.pathname === "/tv"
+        ? `/tv/detail/${v.id}`
+        : `/search/detail/${v.id}`,
       {
         state: {
           backgroundLocation: location,

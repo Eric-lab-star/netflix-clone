@@ -69,7 +69,7 @@ const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
 root.render(
-  <BrowserRouter>
+  <BrowserRouter basename="/netflix-clone">
     <RecoilRoot>
       <QueryClientProvider client={client}>
         <ThemeProvider theme={defaultTheme}>

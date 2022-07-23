@@ -31,6 +31,9 @@ function App() {
           <Route index element={<Home />} />
           <Route path="/search" element={<Search />} />
           <Route path="/tv" element={<Tv />} />
+          <Route path="tv/detail/:id" element={<MovieDetail />} />
+          <Route path="movie/detail/:id" element={<MovieDetail />} />
+          <Route path="search/detail/:id" element={<MovieDetail />} />
           <Route path="*" element={<div>nothing to show</div>} />
         </Route>
       </Routes>
@@ -39,6 +42,7 @@ function App() {
         <Routes>
           <Route path="tv/detail/:id" element={<MovieDetail />} />
           <Route path="movie/detail/:id" element={<MovieDetail />} />
+          <Route path="search/detail/:id" element={<MovieDetail />} />
         </Routes>
       )}
     </Main>
