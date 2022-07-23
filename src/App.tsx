@@ -37,7 +37,8 @@ function App() {
 
       {state?.backgroundLocation && (
         <Routes>
-          <Route path="/detail/:id" element={<MovieDetail />} />
+          <Route path="tv/detail/:id" element={<MovieDetail />} />
+          <Route path="movie/detail/:id" element={<MovieDetail />} />
         </Routes>
       )}
     </Main>

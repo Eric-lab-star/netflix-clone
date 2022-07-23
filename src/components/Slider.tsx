@@ -261,14 +261,17 @@ export default function SliderComponent({
     setLayoutId("");
   };
   const clickPoster = (v: IMovieResult | ITvResult) => {
-    navigate(`/detail/${v.id}`, {
-      state: {
-        backgroundLocation: location,
-        result: v,
-        img: `${imgBaseUrl}${posterSize}`,
-        genres: getGenreString(v.genre_ids),
-      },
-    });
+    navigate(
+      location.pathname === "/" ? `movie/detail/${v.id}` : `/tv/detail/${v.id}`,
+      {
+        state: {
+          backgroundLocation: location,
+          result: v,
+          img: `${imgBaseUrl}${posterSize}`,
+          genres: getGenreString(v.genre_ids),
+        },
+      }
+    );
   };
 
   const getGenreString = (inputIdArray: Number[]) => {
