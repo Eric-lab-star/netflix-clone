@@ -46,14 +46,33 @@ const SliderGrid = styled(motion.div)`
 `;
 
 const PosterBox = styled(motion.div)<{ imgsrc: String }>`
-  background-image: ${(props) => `url(${props.imgsrc})`};
+  background-image: ${(props) => {
+    if (props.imgsrc === "null") {
+      return "none";
+    }
+    return `url(${props.imgsrc})`;
+  }};
+  border-radius: 10px;
+
   background-size: cover;
   background-position: center center;
+  background-color: #fffefe77;
   &:first-child {
     transform-origin: center left;
   }
   & :last-child {
     transform-origin: center right;
+  }
+`;
+const Ban = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: ${(props) => props.theme.red};
+  height: 90%;
+  div {
+    font-weight: 600;
   }
 `;
 
@@ -81,8 +100,10 @@ const HoveredBox = styled(motion.div)`
   grid-template-columns: 80px 1fr;
   align-items: center;
   background-color: black;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
   position: absolute;
-  top: ${PosterHeight}px;
+  top: ${PosterHeight - 10}px;
   padding: 5px;
 `;
 
@@ -315,8 +336,31 @@ export default function SliderComponent({
                 onMouseEnter={() => setPosterConfig(result)}
                 onMouseLeave={onMouseLeave}
                 whileHover={{ scale: 1.1, zIndex: 1 }}
-                imgsrc={`${imgBaseUrl}${posterSize}` + result.poster_path}
+                imgsrc={
+                  result.poster_path
+                    ? `${imgBaseUrl}${posterSize}` + result.poster_path
+                    : "null"
+                }
               >
+                {!result.poster_path && (
+                  <Ban>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-6 w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
+                      />
+                    </svg>
+                    <div>No Image</div>
+                  </Ban>
+                )}
                 {parseInt(layoutId) === result.id && (
                   <HoveredBox>
                     <Vote>
