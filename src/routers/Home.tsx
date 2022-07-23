@@ -3,6 +3,7 @@ import { useQuery } from "react-query";
 import styled from "styled-components";
 import {
   getConfig,
+  getLatestMoives,
   getNowPlaying,
   getPopular,
   getUpComing,
@@ -71,19 +72,23 @@ export default function Home() {
     ["movies", "popluar"],
     getPopular
   );
+  const { data: latest, isLoading: isLatetes } = useQuery<IMovies>(
+    ["movies", "latest"],
+    getLatestMoives
+  );
   const { data: config, isLoading: isConfig } = useQuery<IConfig>(
     "config",
     getConfig
   );
 
   const imgBaseUrl = config?.images.base_url;
-  const backdropSize3 = config?.images.backdrop_sizes[3];
   const posterSize = config?.images.poster_sizes[5];
+  const backdropSize3 = config?.images.backdrop_sizes[3];
   const backdropImgURL = nowPlaying?.results[randomNum].backdrop_path;
 
   return (
     <Main>
-      {isMovieData && isConfig && isUpcoming && isPopular ? (
+      {isMovieData && isConfig && isUpcoming && isPopular && isLatetes ? (
         <Loading>
           <Logo />
         </Loading>
@@ -118,6 +123,12 @@ export default function Home() {
             <SliderComponent
               sliderName={"Popular"}
               data={popular}
+              imgBaseUrl={imgBaseUrl}
+              posterSize={posterSize}
+            />
+            <SliderComponent
+              sliderName={"Latest Movie"}
+              data={latest}
               imgBaseUrl={imgBaseUrl}
               posterSize={posterSize}
             />

@@ -242,3 +242,20 @@ export async function getTvTop() {
   const json = response.json();
   return json;
 }
+
+export async function getLatestMoives() {
+  const today = Date.now();
+  const response = await fetch(
+    `${BASEURL}/discover/movie?api_key=${APIKEY}&language=en-US&sort_by=release_date.desc&include_adult=false&include_video=false&page=1&with_watch_monetization_types=flatrate&year=2022&release_date.lte=${today}`
+  );
+  const json = await response.json();
+  return json;
+}
+export async function getLatestTvs() {
+  const now = Date.now();
+  const response = await fetch(
+    `${BASEURL}/discover/tv?api_key=${APIKEY}&language=en-US&sort_by=first_air_date.desc&first_air_date.lte=${now}&page=1&timezone=America%2FNew_York&include_null_first_air_dates=false&with_watch_monetization_types=flatrate&with_status=0&with_type=0`
+  );
+  const json = response.json();
+  return json;
+}

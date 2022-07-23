@@ -2,6 +2,7 @@ import { useQuery } from "react-query";
 import styled from "styled-components";
 import {
   getConfig,
+  getLatestTvs,
   getTvOnair,
   getTvPopular,
   getTvTop,
@@ -41,6 +42,10 @@ export default function Tv() {
     ["config"],
     getConfig
   );
+  const { data: latest, isLoading: isLoading } = useQuery<ITvOnair>(
+    ["tv", "latest"],
+    getLatestTvs
+  );
 
   const imgBaseUrl = config?.images.base_url;
   const posterSize = config?.images.poster_sizes[5];
@@ -70,6 +75,12 @@ export default function Tv() {
             imgBaseUrl={imgBaseUrl}
             posterSize={posterSize}
             sliderName={"Top Rated"}
+          />
+          <SliderComponent
+            data={latest}
+            imgBaseUrl={imgBaseUrl}
+            posterSize={posterSize}
+            sliderName={"Latest"}
           />
           <FooterComponent />
         </>
